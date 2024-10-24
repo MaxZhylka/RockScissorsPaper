@@ -1,0 +1,11 @@
+{
+    "editor.fontSize": 20,
+    "editor.codeLensFontSize": 0,
+    "notebook.markup.fontSize": 0,
+    "editor.minimap.sectionHeaderFontSize": 9,
+    "chat.editor.fontSize": 20,
+    "scm.inputFontSize": 20,
+    "debug.console.fontSize": 14,
+    "terminal.integrated.fontSize": 20,
+    "markdown.preview.fontSize": 20
+}

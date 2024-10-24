@@ -1,0 +1,15 @@
+* {
+  font-family: 'Koulen', sans-serif;
+  color: white; 
+}
+body
+{
+  overflow: hidden;
+  height: 100%;
+}
+html
+{
+  background: linear-gradient(#343695,#348B95 );
+  height: 100%;
+
+}

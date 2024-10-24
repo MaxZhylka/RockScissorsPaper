@@ -1,0 +1,24 @@
+.menuBtn
+{
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 64px;
+    cursor: pointer;
+    transition: 200ms ease-in-out;
+    width: 600px;
+}
+.menuBtn:hover
+{
+    color:gray;
+}
+
+.menu
+{
+    margin-top: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap:45px;
+}
