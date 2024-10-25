@@ -11,6 +11,7 @@ const Player = ({ playerData }) => {
 
     const displayMove = useCallback(() => {
         const moves = playerData.moves || [];
+        
         if (moves.length > 0) {
             const lastMove = moves[moves.length - 1];
             switch (lastMove) {
@@ -34,8 +35,10 @@ const Player = ({ playerData }) => {
 
     useEffect(() => {
         const actions = playerData.actions || []; 
-        if (actions.length > 0) {
-            const lastAction = actions[actions.length - 1];
+        const lastAction=actions.length>0?actions[actions.length - 1]:[];
+        console.log(actions);
+            
+            console.log(lastAction);
             switch (lastAction) {
                 case 'connect':
                     displayMove(); 
@@ -44,13 +47,9 @@ const Player = ({ playerData }) => {
                     setImg(conErrorImg); 
                     break;
                 default:
-                    setImg(questionImg); 
-                    break;
-            }
-        } else {
-            setImg(questionImg);
-        }
-    }, [playerData, displayMove]);
+                    displayMove();
+                    break;}
+            }, [playerData, displayMove]);
 
     return (
         <div className="playerContainer">

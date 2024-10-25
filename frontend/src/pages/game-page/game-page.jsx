@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import paperImg from '../../assets/img/paper.png';
 import scissorsImg from '../../assets/img/scissors.png';
 import rockImg from '../../assets/img/rock.png';
+import flag from '../../assets/img/flag.png'
 import "./game-page.css"
 const GamePage = () => {
     const {gameId} = useParams();
@@ -21,11 +22,23 @@ const GamePage = () => {
         }
     }, [readyState]);
 
+    const move = (move) =>
+    {
+        sendMessage({type: 'move', gameId: gameId,playerId: user.id,playerName:user.login, move:move });
+    }
+    
+    const Moves ={
+        Rock: 'rock',
+        Scissors: 'scissors',
+        Paper: 'paper'
+    }
+    
+
     return (
         <div>
             <header className="gameHeader">
-                <img src="../assets/img/flag.png" alt="Flag" />
-                <h1>{headers[0]}</h1>
+                <img className="headerImg" src={flag} alt="Flag" />
+                <h1 className="headerText">{headers[0]}</h1>
             </header>
             <div className="timer"></div>
             <div className="players">
@@ -33,10 +46,10 @@ const GamePage = () => {
                     <Player key={index} playerData={player} />
                 ))}
             </div>
-            <div className="buttons">
-                <img src={rockImg}/>
-                <img src={scissorsImg}/>
-                <img src={paperImg}/>
+            <div className="buttonsContainer">
+                <button className="Btn" onClick={()=>move(Moves.Rock)}><img className="gameBtnImg" src={rockImg}/></button>
+                <button className="Btn" onClick={()=>move(Moves.Scissors)}><img className="gameBtnImg" src={scissorsImg}/></button>
+                <button className="Btn" onClick={()=>move(Moves.Paper)}><img className="gameBtnImg" src={paperImg}/></button>
             </div>
         </div>
     );

@@ -8,15 +8,20 @@ const gameSchema = new Schema(
             playerId: String,
             playerName: String,
             moves: [String],
-            activies: [String]
+            actions: [String],
+            isLoose: { type: Boolean, default: false }
         }
     ],
     results:[
         {
-            winnerId: String,
+            winnerId: [String],
+            winnerName: [String],
             round: Number
         }
     ],
+    isDisplay:{type: Boolean, default:false},
+    winner:String,
+    winnerId:String,
     date: {type: Date, default: Date.now}
 });
 module.exports = new model('Game', gameSchema);
