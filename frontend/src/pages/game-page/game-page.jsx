@@ -9,12 +9,12 @@ import rockImg from '../../assets/img/rock.png';
 import flag from '../../assets/img/flag.png';
 import { CSSTransition } from 'react-transition-group';
 import "./game-page.css";
-
+import { WS_BASE_URL } from "../../http";
 const GamePage = () => {
     const { gameId } = useParams();
     const user = useSelector(state => state.auth.user);
     const game = useSelector(state => state.game);
-    const { sendMessage, readyState } = useWebSocket("ws://localhost:5000");
+    const { sendMessage, readyState } = useWebSocket(WS_BASE_URL);
     const [currentMove, setCurrentMove] = useState("");
     const [isSelectButtonActive, setIsSelectButtonActive] = useState(false);
     const [unselectStates, setUnselectStates] = useState({ rock: false, paper: false, scissors: false });

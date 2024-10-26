@@ -3,10 +3,10 @@ import "./menu.css";
 import { useNavigate } from "react-router";
 import useWebSocket from '../../websocket/websocket';
 import { useSelector } from "react-redux";
-
+import { WS_BASE_URL } from "../../http";
 const Menu=()=>
 { 
-    const { sendMessage } = useWebSocket('ws://localhost:5000'); 
+    const { sendMessage } = useWebSocket(WS_BASE_URL); 
     const navigate=useNavigate();
     const gameId=useSelector( (state)=>state.game._id);
     const goToProfile=()=>
