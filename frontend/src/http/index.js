@@ -1,6 +1,5 @@
 import axios from 'axios';
-import redirectToLogin from "../pages/auth-page/auth-page";
-export const BASE_URL='http://localhost:5000'
+export const BASE_URL='http://26.251.194.241:5000'
 const $api = axios.create(
     {
         withCredentials: true,
@@ -25,7 +24,7 @@ $api.interceptors.response.use(
                 const originalRequest=error.config;
                 originalRequest._isRetry=true;
                 try {
-                    const response= await axios.get('http://localhost:5000/refresh', {withCredentials:true});
+                    const response= await axios.get(`${BASE_URL}/refresh`, {withCredentials:true});
                     localStorage.setItem('token',response.data.accessToken);
                     return $api.request(originalRequest);
                 } catch (error) {

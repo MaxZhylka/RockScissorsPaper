@@ -6,13 +6,13 @@ import rockImg from '../../assets/img/rock.png';
 import conErrorImg from '../../assets/img/conError.png';
 import "./player.css";
 
-const Player = ({ playerData }) => {
+const Player = ({ playerData, isDisplay }) => {
     const [img, setImg] = useState(questionImg); 
 
     const displayMove = useCallback(() => {
         const moves = playerData.moves || [];
         
-        if (moves.length > 0) {
+        if (moves.length > 0 && isDisplay) {
             const lastMove = moves[moves.length - 1];
             switch (lastMove) {
                 case 'paper':
@@ -31,14 +31,12 @@ const Player = ({ playerData }) => {
         } else {
             setImg(questionImg); 
         }
-    }, [playerData.moves]);
+    }, [playerData.moves, isDisplay]);
+
 
     useEffect(() => {
         const actions = playerData.actions || []; 
         const lastAction=actions.length>0?actions[actions.length - 1]:[];
-        console.log(actions);
-            
-            console.log(lastAction);
             switch (lastAction) {
                 case 'connect':
                     displayMove(); 

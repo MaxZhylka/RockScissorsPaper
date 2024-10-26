@@ -11,20 +11,62 @@
     gap:50px;
     width: 100%;
     position: fixed;
-    bottom: 0;
+    bottom: 20px;
     
+
 }
 .gameHeader
 {
     display: flex;
+    position: relative;
     flex-direction: row;
     align-items: center;
 
+}
+.scoreText
+{
+    font-size: 96px;
+    text-align: center;
+    width: 100%;
+    position: absolute;
+    top:200px;
+}
+.selectBtn
+{
+    background-color: #009DFF;
+    border: none;
+    margin: 0 auto;
+    margin-top: 10px;
+    border-radius: 32px;
+    width: 375px;
+    height: 85px;
+    font-size: 64px;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 200ms ease-in-out, transform 100ms ease-in-out;
+    z-index: 1;
+}
+.BtnContainer{
+    display: flex;
+
+}
+.selectBtn:hover
+{
+    background-color: #74B1D7;
+}
+.selectBtn:active
+{
+    transform: scale(0.98);
+}
+.selectBtn:disabled
+{
+    background-color: #74B1D7;
 }
 
 .gameBtnImg
 {
     width: 140px;
+    position: absolute;
     height: 140px;
     
 }
@@ -50,4 +92,42 @@
     width: 225px;
     height: 225px;
     border-radius: 100%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+.Btn:disabled
+{
+    cursor: default;
+}
+.Unactive
+{
+    position: absolute;
+    width: 225px;
+    height: 225px;
+    z-index: 1;
+
+    border-radius: 100%;
+    background-color: rgba(63, 63, 63, 0.44);
+    transition: opacity 200ms ease-in-out;
+}
+.Unselect-enter
+{
+    opacity: 0;
+}
+.Unselect-enter-active
+{
+    opacity: 1;
+    transition: opacity ease-in-out 300ms;
+}
+.Unselect-exit
+{
+    opacity: 1;
+}
+.Unselect-exit-active
+{
+    opacity: 0;
+    transition: opacity ease-in-out 300ms;
 }

@@ -16,7 +16,6 @@ const useWebSocket = (url) => {
         };
 
         socket.onmessage = (event) => {
-            console.log(event.data);
             const data = JSON.parse(event.data);
             dispatch(setGame(data.game));
         };
@@ -28,7 +27,7 @@ const useWebSocket = (url) => {
         return () => {
             socket.close();
         };
-    }, [url]);
+    }, [url, dispatch]);
 
     const sendMessage = (message) => {
         if (ws) {

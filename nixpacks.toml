@@ -1,0 +1,5 @@
+# nixpacks.toml
+[phases]
+setup = "cd backend"
+install = "npm install"
+start = "npm start"

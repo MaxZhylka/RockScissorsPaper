@@ -47,11 +47,11 @@
 }
 .formBtn:hover
 {
-    scale: 1.02;
+    transform: scale(1.02);
 }
 .formBtn:active
 {
-    scale: 0.98;
+    transform: scale(0.98);
 }
 .ErrorField
 {

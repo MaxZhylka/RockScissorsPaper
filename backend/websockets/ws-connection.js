@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
 const Game = require('../models/games-model');
-const determinedRoundWinner = require('../controllers/game-controller');
+const determineRoundWinner = require('../controllers/game-controller');
 const clients = {};
 
 const setupWebSocket = (server) => {
@@ -12,7 +12,7 @@ const setupWebSocket = (server) => {
         ws.on('message', async (message) => {
             const parsedMessage = JSON.parse(message);
             console.log(parsedMessage);
-        
+            
             const { type, playerId,playerName, gameId, move } = parsedMessage;
         
             switch (type) {
@@ -99,7 +99,7 @@ const setupWebSocket = (server) => {
                                     if (activePlayers.length > 2) {
                                         // Устанавливаем isLoose для проигравших
                                         for (const player of activePlayers) {
-                                            if (!winners.includes(player.playerId)) {
+                                            if (!winners.map(obj => obj.playerId).includes(player.playerId)) {
                                                 await Game.updateOne(
                                                     { _id: gameId, "players.playerId": player.playerId },
                                                     { $set: { "players.$.isLoose": true } }
@@ -115,7 +115,7 @@ const setupWebSocket = (server) => {
                                                 await Game.updateOne(
                                                     { _id: gameId },
                                                     { 
-                                                        $set: { winner: player.playerName, winnerId: player.playerId },
+                                                        $set: { winnerName: player.playerName, winnerId: player.playerId },
                                                         $push: { results: { winnerId: [player.playerId], winnerName: [player.playerName], round: updatedGame.results.length + 1 } },
                                                         $set: { isDisplay: true }
                                                     }
@@ -129,12 +129,17 @@ const setupWebSocket = (server) => {
                                             }
                                         }
                                     }
-                
-                                    // Добавляем результат раунда
+                                    //Добавляем результаты раунда
                                     await Game.updateOne(
                                         { _id: gameId },
                                         { 
-                                            $push: { results: { winnerId: winners, round: updatedGame.results.length + 1 } },
+                                            $push: { 
+                                                results: { 
+                                                    winnerId: winners.map(winner => winner.playerId), 
+                                                    winnerName: winners.map(winner => winner.playerName), 
+                                                    round: updatedGame.results.length + 1 
+                                                } 
+                                            },
                                             $set: { isDisplay: true }
                                         }
                                     );
