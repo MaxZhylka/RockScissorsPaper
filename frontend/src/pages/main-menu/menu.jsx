@@ -3,7 +3,7 @@ import "./menu.css";
 import { useNavigate } from "react-router";
 import useWebSocket from '../../websocket/websocket';
 import { useSelector } from "react-redux";
-const WS_BASE_URL = process.env.WS_BASE_URL;
+const WS_BASE_URL = process.env.REACT_APP_WS_BASE_URL;
 const Menu=()=>
 { 
     const { sendMessage } = useWebSocket(WS_BASE_URL); 
