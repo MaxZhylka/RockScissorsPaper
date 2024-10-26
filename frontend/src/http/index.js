@@ -1,6 +1,6 @@
 import axios from 'axios';
-export const BASE_URL='https://rockscissorspaper-production.up.railway.app'
-export const WS_BASE_URL='wss://rockscissorspaper-production.up.railway.app'
+const BASE_URL= process.env.BASE_URL;
+
 const $api = axios.create(
     {
         withCredentials: true,

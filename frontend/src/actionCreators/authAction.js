@@ -2,7 +2,7 @@ import axios from 'axios';
 import { SET_AUTH, SET_USER, SET_USERS } from './authActionTypes';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import AuthService from '../service/authService';
-import { BASE_URL } from '../http';
+const BASE_URL = process.env.BASE_URL;
 export const setAuth = (isAuth) => ({
     type: SET_AUTH,
     payload: isAuth,

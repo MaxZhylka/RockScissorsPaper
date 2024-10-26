@@ -9,7 +9,7 @@ import rockImg from '../../assets/img/rock.png';
 import flag from '../../assets/img/flag.png';
 import { CSSTransition } from 'react-transition-group';
 import "./game-page.css";
-import { WS_BASE_URL } from "../../http";
+const WS_BASE_URL = process.env.WS_BASE_URL;
 const GamePage = () => {
     const { gameId } = useParams();
     const user = useSelector(state => state.auth.user);
