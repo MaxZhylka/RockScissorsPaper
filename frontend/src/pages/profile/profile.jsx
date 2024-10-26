@@ -1,5 +1,4 @@
 import React from "react"
-import AuthService from "../../service/authService";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { logout } from "../../actionCreators/authAction";

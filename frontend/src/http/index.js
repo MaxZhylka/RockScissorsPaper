@@ -1,5 +1,5 @@
 import axios from 'axios';
-export const BASE_URL='http://26.251.194.241:5000'
+export const BASE_URL='https://rockscissorspaper-production.up.railway.app'
 const $api = axios.create(
     {
         withCredentials: true,
