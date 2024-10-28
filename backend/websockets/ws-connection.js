@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
 const Game = require('../models/games-model');
-const handlePlayerMove = require('../controllers/game-controller');
+const determineRoundWinner = require("../controllers/game-controller");
 const clients = {};
 
 const setupWebSocket = (server) => {
@@ -159,7 +159,7 @@ const setupWebSocket = (server) => {
                                                 
                                             );
                                             await Game.updateOne(
-                                                {_id:gameId, "player.playerId":{$ne: winnerPlayerIds[0]}},
+                                                {_id:gameId, "players.playerId":{$ne: winnerPlayerIds[0]}},
                                                 {
                                                     $inc: {"players.$.score":pointsLoss}
                                                 }
