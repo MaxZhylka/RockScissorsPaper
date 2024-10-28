@@ -4,8 +4,8 @@ const initialState = {
     players: [],
     results: [],
     isDisplay: false, 
-    winnerId: [],
-    winner: []
+    winnerId: "",
+    winner: ""
 };
 
 export const gameReducer = (state = initialState, action)=>

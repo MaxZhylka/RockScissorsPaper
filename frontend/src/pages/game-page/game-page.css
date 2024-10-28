@@ -15,12 +15,29 @@
     
 
 }
+.menuButton
+{
+    background-color: transparent;
+    border: none;
+    margin-bottom: 100px;
+    margin-left: -80px;
+    cursor: pointer;
+    border-radius: 32px;
+    width: 375px;
+    height: 85px;
+    font-size: 64px;
+    font-weight: bold;
+
+    transition: background-color 200ms ease-in-out, transform 100ms ease-in-out;
+    z-index: 1;
+}
 .gameHeader
 {
     display: flex;
     position: relative;
     flex-direction: row;
     align-items: center;
+    height: 225px;
 
 }
 .scoreText
@@ -65,15 +82,26 @@
 
 .gameBtnImg
 {
-    width: 140px;
+    width: 225px;
+    height: 225px;
     position: absolute;
-    height: 140px;
+    
     
 }
 .headerImg
 {
     width: 225px;
     height: 225px;
+    z-index: 1;
+    transition: 200ms ease-in-out;
+    cursor: pointer;
+}
+.headerImg:hover{
+    scale:1.1;
+}
+.headerImg:active
+{
+    scale:0.98;
 }
 .headerText
 {

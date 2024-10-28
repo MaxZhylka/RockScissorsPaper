@@ -5,10 +5,12 @@ import scissorsImg from '../../assets/img/scissors.png';
 import rockImg from '../../assets/img/rock.png';
 import conErrorImg from '../../assets/img/conError.png';
 import "./player.css";
+import { useSelector } from "react-redux";
+import loser from '../../assets/img/loser.png';
 
 const Player = ({ playerData, isDisplay }) => {
     const [img, setImg] = useState(questionImg); 
-
+    const winnerId = useSelector(state => state.game.winnerId);
     const displayMove = useCallback(() => {
         const moves = playerData.moves || [];
         
@@ -42,18 +44,26 @@ const Player = ({ playerData, isDisplay }) => {
                     displayMove(); 
                     break;
                 case 'disconnect':
-                    setImg(conErrorImg); 
+                    if(!winnerId)
+                    {
+                        setImg(conErrorImg); 
+                    }else
+                    {
+                        displayMove(); 
+                    }
+                    
                     break;
                 default:
                     displayMove();
                     break;}
-            }, [playerData, displayMove]);
+            }, [playerData, displayMove, winnerId]);
 
     return (
         <div className="playerContainer">
             <div className="playerName">{playerData.playerName}</div>
             <div className="playerChoose">
                 <img className="playerImg" src={img} alt="Player's move" />
+                {playerData.isLoose&&<img className="playerImg" src={loser} alt="Loser"/>}
             </div>
         </div>
     );

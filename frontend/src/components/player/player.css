@@ -19,8 +19,9 @@
 }
 .playerImg
 {
-    width: 225px;
-    height: 225px;
+    width: 400px;
+    position: absolute;
+    height: 400px;
 }
 .playerName
 {

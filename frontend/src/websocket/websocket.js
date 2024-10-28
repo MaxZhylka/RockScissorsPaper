@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { setGame } from '../actionCreators/gameActions';
 import { useDispatch } from 'react-redux';
 
-const useWebSocket = (url) => {
+const useWebSocket = (url, onMessageReceived) => {
     const [ws, setWs] = useState(null);
     const [readyState, setReady] = useState(false);
     const dispatch = useDispatch();
+
     useEffect(() => {
         const socket = new WebSocket(url);
         setWs(socket);
@@ -18,6 +19,7 @@ const useWebSocket = (url) => {
         socket.onmessage = (event) => {
             const data = JSON.parse(event.data);
             dispatch(setGame(data.game));
+            if (onMessageReceived) onMessageReceived();
         };
 
         socket.onclose = () => {
@@ -27,11 +29,13 @@ const useWebSocket = (url) => {
         return () => {
             socket.close();
         };
-    }, [url, dispatch]);
+    }, [url, dispatch, onMessageReceived]);
 
     const sendMessage = (message) => {
         if (ws) {
+            
             ws.send(JSON.stringify(message));
+            
         }
     };
 

@@ -8,16 +8,23 @@ import scissorsImg from '../../assets/img/scissors.png';
 import rockImg from '../../assets/img/rock.png';
 import flag from '../../assets/img/flag.png';
 import { CSSTransition } from 'react-transition-group';
+import Loader from '../../components/loader/loader';
 import "./game-page.css";
+import { useNavigate } from "react-router-dom";
+
+
 const WS_BASE_URL = process.env.REACT_APP_WS_BASE_URL;
 const GamePage = () => {
     const { gameId } = useParams();
+
     const user = useSelector(state => state.auth.user);
     const game = useSelector(state => state.game);
-    const { sendMessage, readyState } = useWebSocket(WS_BASE_URL);
+    const [isLoading, setIsLoading] = useState(true);
+    const { sendMessage, readyState } = useWebSocket(WS_BASE_URL, setIsLoading);
     const [currentMove, setCurrentMove] = useState("");
     const [isSelectButtonActive, setIsSelectButtonActive] = useState(false);
     const [unselectStates, setUnselectStates] = useState({ rock: false, paper: false, scissors: false });
+    const navigate = useNavigate(); 
 
     const rockRef = useRef(null);
     const paperRef = useRef(null);
@@ -25,12 +32,14 @@ const GamePage = () => {
 
     useEffect(() => {
         if ( readyState) {
-            sendMessage({ type: 'join', gameId: gameId, playerId: user.id, playerName: user.login });
+            
+            sendMessage({ type: 'join', gameId: gameId, playerId: user.id, playerName: user.login,},()=>{setIsLoading(false);});
+            
+
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [readyState]);
 
-    
     useEffect(() => {
         if (!game.isDisplay) {
             setIsSelectButtonActive(false);
@@ -77,12 +86,31 @@ const GamePage = () => {
             setIsSelectButtonActive(true);
         }
     };
+    const GoToMenu=()=>{
+        navigate('/menu/');
+        
+    }
+    const isLoose = () => {
+        
+        if (!game || !game.players) {
+            return false; 
+        }
+    
+        if ((game.players.find(player => player.playerId === user.id && player.isLoose)) || 
+            (!game.players.find(player => player.playerId === user.id))) {
+            return true;
+        }
+    
+        return false;
+    };
+    
     
     const Moves = {
         Rock: 'rock',
         Scissors: 'scissors',
         Paper: 'paper'
     };
+
 
     const calcScore = () => {
         if (game.players.length !== 2) return "";
@@ -100,26 +128,43 @@ const GamePage = () => {
         });
         return `${scores[game.players[0].playerId]} : ${scores[game.players[1].playerId]}`;
     };
+    const GiveUp=()=>
+        {
+            
+            sendMessage({type:"giveUp",
+                gameId: gameId,
+                playerId: user.id,
+                playerName: user.login
+            });
+        }   
+        if(isLoading)
+        {
+            return(<Loader/>);
+        }
 
     return (
         <div>
             <header className="gameHeader">
-                <img className="headerImg" src={flag} alt="Flag" />
-                <h1 className="headerText">Round {(game.results?.length || 0) + 1}</h1>
+                {!game.winnerId&&<img onClick={GiveUp} className="headerImg" src={flag} alt="Flag" />}
+                {game.winnerId&&<button onClick={GoToMenu} className="menuButton">Menu</button>}
+                <h1 className="headerText"> {game.winner?`${game.winner} WIN`:`Round ${game.results?.length +1|| 1}`}</h1>
                 {game.players?.length === 2 && <div className="scoreText">{calcScore()}</div>}
             </header>
             <div className="timer"></div>
             <div className="players">
-                {(game.players || []).map((player, index) => (
-                    <Player key={index} playerData={player} isDisplay={game.isDisplay} />
-                ))}
+                {(game.players || []).map((player, index) => {
+                    
+                    return <Player key={index} playerData={player} isDisplay={game.isDisplay} />
+                })}
             </div>
-            <div className="BtnContainer">
+            {!game.winnerId&&!isLoose()&&<div className="BtnContainer">
                 <button className="selectBtn" disabled={isSelectButtonActive} onClick={move}>
                     {isSelectButtonActive ? "Selected" : "Select"}
                 </button>
             </div>
-            <div className="buttonsContainer">
+            }
+
+            {!game.winnerId&&!isLoose()&&<div className="buttonsContainer"> 
                 <button className="Btn" disabled={isSelectButtonActive} onClick={() => setCurrentMove(Moves.Rock)}>
                     <img className="gameBtnImg" src={rockImg} alt="Rock" />
                     <CSSTransition nodeRef={rockRef} in={!unselectStates.rock} classNames="Unselect" timeout={200} unmountOnExit>
@@ -139,6 +184,7 @@ const GamePage = () => {
                     </CSSTransition>
                 </button>
             </div>
+            }
         </div>
     );
 };
