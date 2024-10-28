@@ -11,6 +11,7 @@ import { CSSTransition } from 'react-transition-group';
 import Loader from '../../components/loader/loader';
 import "./game-page.css";
 import { useNavigate } from "react-router-dom";
+import ScoreTable from "../../components/scoreTable/scoreTable";
 
 
 const WS_BASE_URL = process.env.REACT_APP_WS_BASE_URL;
@@ -29,6 +30,7 @@ const GamePage = () => {
     const rockRef = useRef(null);
     const paperRef = useRef(null);
     const scissorsRef = useRef(null);
+    const scoreRef = React.createRef();
 
     useEffect(() => {
         if ( readyState) {
@@ -146,10 +148,16 @@ const GamePage = () => {
 
     return (
         <div>
+            <CSSTransition in={displayScore} nodeRef={scoreRef} classNames="Unselect" timeout={300} unmountOnExit>
+                <div ref={scoreRef} >
+                <ScoreTable   close={setDisplayScore}></ScoreTable>
+                </div>
+            </CSSTransition>
+            {(game.winnerId||isLoose())&&<button onClick={GoToMenu} className="menuButton">Menu</button>}
+            {(game.winnerId||isLoose())&& <button className="scoreBtn" onClick={()=>setDisplayScore(!displayScore)}>Score</button>}
             <header className="gameHeader">
                 {!game.winnerId&&<img onClick={GiveUp} className="headerImg" src={flag} alt="Flag" />}
-                {(game.winnerId||isLoose())&&<button onClick={GoToMenu} className="menuButton">Menu</button>}
-                {(game.winnerId||isLoose())&& <button onClick={setDisplayScore(!displayScore)}>SCORE</button>}
+                
                 <h1 className="headerText"> {game.winner?`${game.winner} WIN`:`Round ${game.results?.length +1|| 1}`}</h1>
                 {game.players?.length === 2 && <div className="scoreText">{calcScore()}</div>}
             </header>

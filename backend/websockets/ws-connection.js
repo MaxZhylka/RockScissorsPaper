@@ -154,14 +154,14 @@ const setupWebSocket = (server) => {
                                                 
                                                 {_id:gameId, "players.playerId":winnerPlayerIds[0]},
                                                 {
-                                                    $inc: {"player.$.score":pointsWin}
+                                                    $inc: {"players.$.score":pointsWin}
                                                 }
                                                 
                                             );
                                             await Game.updateOne(
                                                 {_id:gameId, "player.playerId":{$ne: winnerPlayerIds[0]}},
                                                 {
-                                                    $inc: {"player.$.score":pointsLoss}
+                                                    $inc: {"players.$.score":pointsLoss}
                                                 }
                                             )
                                         }
@@ -231,7 +231,7 @@ const setupWebSocket = (server) => {
                                             { _id: gameId, "players.playerId":winnerPlayer.playerId },
                                             { $set: { winner: winnerPlayer.playerName,
                                                     winnerId: winnerPlayer.playerId,
-                                                    "player.$.score":scoreResult} }
+                                                    "players.$.score":scoreResult} }
                                         );
                                         // Уведомляем игроков об окончании игры
                                         const finalGameState = await Game.findById(gameId);
