@@ -81,7 +81,7 @@ const login = async (req, res, next) => {
         const user = await User.findOne( {email: email} );
         if (!user) {
 
-            throw ApiError.BadRequest(`Пользователь ${username} не найден`);
+            throw ApiError.BadRequest(`Пользователь ${email} не найден`);
         }
         const validPassword =await bcrypt.compare(password, user.password);
         if (!validPassword) {
@@ -93,7 +93,7 @@ const login = async (req, res, next) => {
         if (!deviceId) {
 
             deviceId = crypto.randomBytes(32).toString('hex');
-            res.cookie('deviceId',deviceId, {httpOnly:true, maxAge: 30 * 24 * 60 * 60 * 1000});
+            res.cookie('deviceId',deviceId, {httpOnly:true, maxAge: 30 * 24 * 60 * 60 * 1000 ,secure: true});
 
         }
         const userDto = new userDTO(user);
@@ -140,6 +140,8 @@ const logout = async(req,res, next)=>
             let {refreshToken,deviceId}=req.cookies;
             const findedToken= await TokenService.findToken(refreshToken);
             const validToken= TokenService.validateRefreshToken(refreshToken);
+            console.log(findedToken);
+            console.log(validToken);
             if(!findedToken||!validToken)
                 {
                     return res.status(401).json({message:'Unauthorized'});
@@ -154,9 +156,8 @@ const logout = async(req,res, next)=>
                 const token= TokenService.generateTokens({...userDto});
                 await TokenService.saveToken(user._id,deviceId,token.refreshToken);
                 
-                res.cookie('deviceId', deviceId, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
-                res.cookie('refreshToken', token.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true ,
-                    secure: true,});
+                res.cookie('deviceId', deviceId, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true,secure: true });
+                res.cookie('refreshToken', token.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true,secure: true,});
                 res.status(200).json({message: "TokenRefreshed", accessToken: token.accessToken, user: userDto});
                 
         }

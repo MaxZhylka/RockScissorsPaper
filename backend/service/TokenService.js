@@ -12,7 +12,7 @@ class TokenService {
     validateRefreshToken(refreshToken)
     {
         try{
-            const userData=jwt.verify(refreshToken,process.env.SECRET_REFRESH);
+            const userData= jwt.verify(refreshToken,process.env.SECRET_REFRESH);
             return userData;
         }
         catch(e)
@@ -23,7 +23,7 @@ class TokenService {
     async findToken(refreshToken)
     {
         try{
-        const token= Token.findOne({refreshToken:refreshToken});
+        const token= await Token.findOne({refreshToken:refreshToken});
         return token;
         }
         catch{
