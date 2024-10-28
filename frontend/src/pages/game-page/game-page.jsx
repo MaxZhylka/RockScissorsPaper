@@ -25,7 +25,7 @@ const GamePage = () => {
     const [isSelectButtonActive, setIsSelectButtonActive] = useState(false);
     const [unselectStates, setUnselectStates] = useState({ rock: false, paper: false, scissors: false });
     const navigate = useNavigate(); 
-
+    const [displayScore,setDisplayScore]=useState(false);
     const rockRef = useRef(null);
     const paperRef = useRef(null);
     const scissorsRef = useRef(null);
@@ -137,6 +137,8 @@ const GamePage = () => {
                 playerName: user.login
             });
         }   
+   
+
         if(isLoading)
         {
             return(<Loader/>);
@@ -146,7 +148,8 @@ const GamePage = () => {
         <div>
             <header className="gameHeader">
                 {!game.winnerId&&<img onClick={GiveUp} className="headerImg" src={flag} alt="Flag" />}
-                {game.winnerId&&<button onClick={GoToMenu} className="menuButton">Menu</button>}
+                {(game.winnerId||isLoose())&&<button onClick={GoToMenu} className="menuButton">Menu</button>}
+                {(game.winnerId||isLoose())&& <button onClick={setDisplayScore(!displayScore)}>SCORE</button>}
                 <h1 className="headerText"> {game.winner?`${game.winner} WIN`:`Round ${game.results?.length +1|| 1}`}</h1>
                 {game.players?.length === 2 && <div className="scoreText">{calcScore()}</div>}
             </header>

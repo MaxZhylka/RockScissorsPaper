@@ -112,13 +112,16 @@ const setupWebSocket = (server) => {
                                         
                                         const winnerPlayerIds = winners.map(w => w.playerId);
                                         const winnerPlayerNames = winners.map(w => w.playerName);
+                                        const score = 175*(game.results.length+1);
                                         // Устанавливаем isLoose для проигравших
                                         for (const player of activePlayers) {
                                             if (!winners.map(obj => obj.playerId).includes(player.playerId)) {
                                                 await Game.updateOne(
                                                     { _id: gameId, "players.playerId": player.playerId },
                                                     {$set: { "players.$.isLoose": true , 
-                                                            isDisplay: true},
+                                                            isDisplay: true,
+                                                            "players.$.score": score
+                                                            },
                                                             $push: {
                                                                 results: {
                                                                     winnerId: winnerPlayerIds,
@@ -131,9 +134,38 @@ const setupWebSocket = (server) => {
                                             }
                                         }
                                     } else {
-                                        
+                                        const pointsDraw = 100;
+                                        const pointsWin = 300;
+                                        const pointsLoss = 50;
+
                                         const winnerPlayerIds = winners.map(w => w.playerId);
                                         const winnerPlayerNames = winners.map(w => w.playerName);
+                                        if(winners.length===0)
+                                        {
+                                            await Game.updateMany(
+                                                {
+                                                    $inc:{"players.$[].score":pointsDraw}
+                                                }
+                                            );
+                                        }
+                                        else
+                                        {
+                                            await Game.updateOne(
+                                                
+                                                {_id:gameId, "players.playerId":winnerPlayerIds[0]},
+                                                {
+                                                    $inc: {"player.$.score":pointsWin}
+                                                }
+                                                
+                                            );
+                                            await Game.updateOne(
+                                                {_id:gameId, "player.playerId":{$ne: winnerPlayerIds[0]}},
+                                                {
+                                                    $inc: {"player.$.score":pointsLoss}
+                                                }
+                                            )
+                                        }
+
                                         
                                         await Game.updateOne(
                                             { _id: gameId },
@@ -148,6 +180,7 @@ const setupWebSocket = (server) => {
                                                 },
                                                 $set: { 
                                                     isDisplay: true 
+                                                    
                                                 }
                                                 
                                             }
@@ -191,11 +224,14 @@ const setupWebSocket = (server) => {
                 
                                     // Проверяем условие окончания игры для игры с 3 и более игроками
                                     const remainingPlayers = updatedGameWithResults.players.filter(p => !p.isLoose);
+                                    const scoreResult = (game.results.length+2)*175;
                                     if (remainingPlayers.length === 1) {
                                         const winnerPlayer = remainingPlayers[0];
                                         await Game.updateOne(
-                                            { _id: gameId },
-                                            { $set: { winner: winnerPlayer.playerName, winnerId: winnerPlayer.playerId } }
+                                            { _id: gameId, "players.playerId":winnerPlayer.playerId },
+                                            { $set: { winner: winnerPlayer.playerName,
+                                                    winnerId: winnerPlayer.playerId,
+                                                    "player.$.score":scoreResult} }
                                         );
                                         // Уведомляем игроков об окончании игры
                                         const finalGameState = await Game.findById(gameId);
@@ -204,7 +240,7 @@ const setupWebSocket = (server) => {
                                         });
                                         return;
                                     }
-                
+                                    
                                     // Задержка перед следующим раундом
                                     setTimeout(async () => {
                                         if(!game.winnerId){

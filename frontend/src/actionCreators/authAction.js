@@ -2,7 +2,9 @@ import axios from 'axios';
 import { SET_AUTH, SET_USER, SET_USERS } from './authActionTypes';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import AuthService from '../service/authService';
+import $api from '../http';
 const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export const setAuth = (isAuth) => ({
     type: SET_AUTH,
     payload: isAuth,
@@ -20,7 +22,7 @@ export const setUsers = (users) => ({
 
 export const checkAuth = () => async (dispatch) => {
     try {
-        const response = await axios.get(`${BASE_URL}/refresh`, { withCredentials: true });
+        const response = await $api.get(`/refresh`);
         localStorage.setItem('token', response.data.accessToken);
         dispatch(setAuth(true));
         dispatch(setUser(response.data.user));
