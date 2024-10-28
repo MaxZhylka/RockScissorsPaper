@@ -26,7 +26,7 @@ const registerUser = async (req, res, next) => {
         if (!deviceId) {
             deviceId = crypto.randomBytes(32).toString('hex');
             res.cookie('deviceId', deviceId, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 ,
-                secure: true,});
+                secure: true, sameSite: 'None'});
         }
 
         await newUser.save();
@@ -45,7 +45,7 @@ const registerUser = async (req, res, next) => {
         await saveTokenPromise;
 
         res.cookie('refreshToken', token.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true,
-            secure: true, });
+            secure: true, sameSite: 'None'});
 
         res.status(200).json({ token: token.accessToken, user: userDto });
     } catch (e) {
@@ -93,14 +93,14 @@ const login = async (req, res, next) => {
         if (!deviceId) {
 
             deviceId = crypto.randomBytes(32).toString('hex');
-            res.cookie('deviceId',deviceId, {httpOnly:true, maxAge: 30 * 24 * 60 * 60 * 1000 ,secure: true});
+            res.cookie('deviceId',deviceId, {httpOnly:true, maxAge: 30 * 24 * 60 * 60 * 1000 ,secure: true,  sameSite: 'None'});
 
         }
         const userDto = new userDTO(user);
         const token = TokenService.generateTokens({ ...userDto });
         await TokenService.saveToken(userDto.id, deviceId, token.refreshToken);
         res.cookie('refreshToken', token.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true,
-            secure: true, });
+            secure: true,  sameSite: 'None' });
         res.status(200).json({ token: token.accessToken, user:userDto});
     }
     catch (e) {
@@ -141,8 +141,6 @@ const logout = async(req,res, next)=>
             console.log(refreshToken);
             const findedToken= await TokenService.findToken(refreshToken);
             const validToken= TokenService.validateRefreshToken(refreshToken);
-            console.err(findedToken);
-            console.err(validToken);
             if(!findedToken||!validToken)
                 {
                     return res.status(401).json({message:'Unauthorized'});
@@ -157,8 +155,8 @@ const logout = async(req,res, next)=>
                 const token= TokenService.generateTokens({...userDto});
                 await TokenService.saveToken(user._id,deviceId,token.refreshToken);
                 
-                res.cookie('deviceId', deviceId, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true,secure: true });
-                res.cookie('refreshToken', token.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true,secure: true,});
+                res.cookie('deviceId', deviceId, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true,secure: true,  sameSite: 'None' });
+                res.cookie('refreshToken', token.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true,secure: true, sameSite: 'None'});
                 res.status(200).json({message: "TokenRefreshed", accessToken: token.accessToken, user: userDto});
                 
         }
