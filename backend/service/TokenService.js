@@ -26,7 +26,8 @@ class TokenService {
         const token= await Token.findOne({refreshToken:refreshToken});
         return token;
         }
-        catch{
+        catch(e){
+            console.log(e);
             return null;
         }
     }

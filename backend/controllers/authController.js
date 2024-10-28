@@ -138,10 +138,11 @@ const logout = async(req,res, next)=>
     const refresh=async(req,res, next)=>
         {
             let {refreshToken,deviceId}=req.cookies;
+            console.log(refreshToken);
             const findedToken= await TokenService.findToken(refreshToken);
             const validToken= TokenService.validateRefreshToken(refreshToken);
-            console.log(findedToken);
-            console.log(validToken);
+            console.err(findedToken);
+            console.err(validToken);
             if(!findedToken||!validToken)
                 {
                     return res.status(401).json({message:'Unauthorized'});

@@ -29,6 +29,7 @@ module.exports=function(err,req,res,next)
             }
             if (err instanceof TokenExpiredError || err.name === 'TokenExpiredError') 
                 {
+                    console.log("TokenExpired");
                     return res.status(401).json({message:'Unauthorized'});
                 }
         
