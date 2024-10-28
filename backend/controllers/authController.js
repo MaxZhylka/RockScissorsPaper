@@ -139,6 +139,8 @@ const logout = async(req,res, next)=>
             const validToken= TokenService.validateRefreshToken(refreshToken);
             if(!findedToken||!validToken)
                 {
+                    console.log(findedToken);
+                    console.log(validToken);
                     return res.status(401).json({message:'Unauthorized'});
                 }
                 const user= await User.findById(validToken.id);
