@@ -9,10 +9,11 @@ const WS_BASE_URL = process.env.REACT_APP_WS_BASE_URL;
 
 const Menu = () => {
  
-    const { sendMessage } = useWebSocket(WS_BASE_URL);
+    
     const navigate = useNavigate();
     const gameId = useSelector((state) => state.game._id);
     const [isInitialMount, setIsInitialMount] = useState(true); 
+    const { sendMessage } = useWebSocket(WS_BASE_URL);
 
 
     const goToProfile = () => {
@@ -26,6 +27,12 @@ const Menu = () => {
     const createGame = () => {
         sendMessage({ type: 'create', onlyTwoPlayers: false });
     };
+
+    const createTournament =()=>
+    {
+        navigate("/tournaments");
+    }
+
 
     useEffect(() => {
         if (!isInitialMount) {
@@ -47,7 +54,7 @@ const Menu = () => {
             <div className="menu">
                 <button className="menuBtn" onClick={createDuoGame}>PLAY 1 VS 1</button>
                 <button className="menuBtn" onClick={createGame}>PLAY 3 AND MORE</button>
-                <button className="menuBtn">TOURNAMENT</button>
+                <button className="menuBtn" onClick={createTournament}>TOURNAMENT</button>
                 <button className="menuBtn" onClick={goToProfile}>PROFILE</button>
             </div>
         </div>

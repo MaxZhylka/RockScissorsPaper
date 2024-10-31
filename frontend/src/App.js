@@ -9,6 +9,8 @@ import Loader from './components/loader/loader';
 import Profile from './pages/profile/profile';
 import ProtectedRoute from './components/protected-route/prtoected-route';
 import GamePage from './pages/game-page/game-page';
+import Tournament from './pages/tournament/tournament';
+import Tournaments from './pages/tournaments/tournaments';
 
 
 function App() {
@@ -30,10 +32,11 @@ function App() {
                   <Routes>
                   <Route exact path="/login" element={<AuthPage />}  />
                   <Route path="/registration" element={<AuthPage />} />
-                  
                         <Route path="/menu" element={<ProtectedRoute><Menu/></ProtectedRoute>} />
                         <Route path="/profile" element={ <ProtectedRoute><Profile/></ProtectedRoute>}></Route>
                         <Route path="/game/:gameId" element={<ProtectedRoute><GamePage></GamePage></ProtectedRoute>}></Route>
+                        <Route path="/tournament/:tournamentId" element={<ProtectedRoute><Tournament></Tournament></ProtectedRoute>}></Route>
+                        <Route path="/tournaments" element={<ProtectedRoute><Tournaments></Tournaments></ProtectedRoute>}></Route>
                   </Routes>
     </div>
     </Router>

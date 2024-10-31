@@ -31,7 +31,6 @@ const GamePage = () => {
     const paperRef = useRef(null);
     const scissorsRef = useRef(null);
     const scoreRef = React.createRef();
-
     useEffect(() => {
         if ( readyState) {
             
@@ -40,15 +39,29 @@ const GamePage = () => {
 
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [readyState]);
+    }, [readyState,gameId]);
 
     useEffect(() => {
         if (!game.isDisplay) {
             setIsSelectButtonActive(false);
             setCurrentMove('');
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [game.isDisplay]);
 
+    useEffect(() => {
+        
+        if (game.winner && game.nextGameId && game.nextGameId !== "" ) {
+            if (game.nextGameId.startsWith('Tournament ')) {
+                const tournamentId = game.nextGameId.split(' ')[1];
+                navigate(`/tournament/${tournamentId}`);
+            } else {
+                navigate(`/game/${game.nextGameId}`);
+            }
+        }
+    }, [game.winner, game.nextGameId, navigate]);
+
+        
     useEffect(()=>
         {
             const currentPlayer=game.players.find(player=>player.playerId===user.id);
@@ -156,7 +169,7 @@ const GamePage = () => {
             {(game.winnerId||isLoose())&&<button onClick={GoToMenu} className="menuButton">Menu</button>}
             {(game.winnerId||isLoose())&& <button className="scoreBtn" onClick={()=>setDisplayScore(!displayScore)}>Score</button>}
             <header className="gameHeader">
-                {!game.winnerId&&<img onClick={GiveUp} className="headerImg" src={flag} alt="Flag" />}
+                {!game.winnerId&&!isLoose()&&<img onClick={GiveUp} className="headerImg" src={flag} alt="Flag" />}
                 
                 <h1 className="headerText"> {game.winner?`${game.winner} WIN`:`Round ${game.results?.length +1|| 1}`}</h1>
                 {game.players?.length === 2 && <div className="scoreText">{calcScore()}</div>}

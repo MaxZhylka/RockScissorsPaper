@@ -23,6 +23,7 @@ const gameSchema = new Schema(
     isDisplay:{type: Boolean, default:false},
     winner:String,
     winnerId:String,
+    nextGameId:String,
     onlyTwoPlayers:{type: Boolean, default:false},
     date: {type: Date, default: Date.now}
 });

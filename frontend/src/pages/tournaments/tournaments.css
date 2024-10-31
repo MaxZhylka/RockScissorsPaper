@@ -1,0 +1,131 @@
+.MenuBtn
+{
+    background-color: transparent;
+    outline: none;
+    border: none;
+    font-size: 48px;
+    font-weight: bold;
+}
+.tournamentsContainer
+{
+    display: flex;
+    flex-direction: column;
+    margin: 40px auto;
+    width: 1000px;
+    height: 600px;
+    align-items: center;
+    border-radius: 50px;
+    background-color: rgb(53, 53, 255); ;
+}
+.searchTournament
+{
+    margin-top: 20px;
+    width: 900px;
+    height: 60px;
+    border:none;
+    padding: 0;
+    font-size: 38px;
+    text-indent: 20px; 
+    background-color: rgb(95, 84, 243);
+    box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.4), 
+    inset -1px -1px 2cm rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+}
+.searchTournament:active,:focus
+{
+    outline: none;
+    border: none;
+}
+.searchTournament:focus::placeholder
+{
+    color:transparent;
+}
+.searchTournament::placeholder
+{
+    font-size: 38px;
+    color:white;
+    font-weight: bold;
+}
+.createTournamentBtn
+{
+    display: block;
+    margin: 0 auto;
+    padding: 0;
+    background-color: #009DFF;
+    font-size: 64px;
+    border-radius: 32px;
+    border:none;
+    width: 300px;
+    transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -webkit-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    will-change: transform;
+
+}
+.createTournamentBtn:hover
+{
+
+    transform: scale(1.05);
+}
+.createTournamentBtn:active
+{
+    transform: scale(0.95);
+}
+
+.text
+{
+    font-weight: bold;
+    font-size: 48px;
+}
+.input
+{
+    background-color: rgb(95, 84, 243);
+    box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.4), 
+    inset -1px -1px 2cm rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50px;
+    text-indent: 20px;
+}
+.tournaments
+{
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    gap: 20px;
+    overflow: scroll;
+    scrollbar-width: none;
+}
+.tournaments::-webkit-scrollbar {
+    display: none; 
+}
+.tournament
+{
+    background-color:rgba(69, 69, 253, 0.4) ;
+    width: 900px;
+    min-height: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    border-radius: 50px;
+    font-size: 50px;
+    cursor: pointer;
+}
+
+.tournamentEnd
+{
+    color:red;
+    animation: blink 2s infinite;
+}
+.tournamentActive
+{
+    color: rgb(34, 255, 34);
+    animation: blink 2s infinite;
+    font-weight: bold;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; } 
+    50% { opacity: 0.4; }
+}

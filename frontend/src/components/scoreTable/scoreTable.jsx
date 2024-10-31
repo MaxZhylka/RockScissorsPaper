@@ -1,11 +1,10 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import "./scoreTable.css";
-const ScoreTable=({close})=>
-{
-    const game = useSelector(state=>state.game);
-    const players = game.players.sort((a, b) => b.score - a.score);
-
+const ScoreTable = ({ close, players: propPlayers }) => {
+    const game = useSelector(state => state.game);
+    const players = propPlayers?.slice().sort((a,b)=>b.score-a.score) || game.players.slice().sort((a, b) => b.score - a.score);
+    
     return(<div onClick={()=>{close(false)}} className="backGroundOpacity" >
         <div className="scoreTable" onClick={(e)=>{e.stopPropagation()}}>
         {players.map((player,index)=>

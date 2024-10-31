@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { SET_AUTH, SET_USER, SET_USERS } from './authActionTypes';
+import { SET_AUTH, SET_TOURNAMENT, SET_USER, SET_USERS } from './authActionTypes';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import AuthService from '../service/authService';
 import $api from '../http';
@@ -19,7 +19,13 @@ export const setUsers = (users) => ({
     type: SET_USERS,
     payload: users,
 });
-
+export const setTournament = (tournament)=>
+(
+    {
+        type: SET_TOURNAMENT,
+        payload: tournament,
+    }
+);
 export const checkAuth = () => async (dispatch) => {
     try {
         const response = await $api.get(`/refresh`);

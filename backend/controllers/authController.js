@@ -7,6 +7,7 @@ require('dotenv').config();
 const userDTO = require('../dtos/user-dto');
 const TokenService = require('../service/TokenService');
 const ApiError=require('../exceptions/api-error');
+const tournament = require("../models/tournament");
 
 const registerUser = async (req, res, next) => {
     try {
@@ -108,15 +109,33 @@ const login = async (req, res, next) => {
         next(e);
     }
 }
-const getUsers = async (req, res, next) => {
+const getTournaments = async (req, res, next) => {
+    const { query, limit = 10, page = 1 } = req.query;
+    const regex = new RegExp(query, 'i');
     try {
-        const Users = await User.find();
-        res.status(200).json(Users);
+        const tournaments = await tournament.find({
+            name:{$regex: regex}
+        }).limit(Number(limit)).skip((Number(page) - 1) * Number(limit)).populate('games').exec();
+        res.json(tournaments);
     }
     catch (e) {
         next(e);
     }
 }
+const getTournament = async (req, res,next)=>
+{
+    const {tournamentId}=req.query;
+    try {
+        const tournamentData = await tournament.findById(tournamentId).populate('games').exec();
+           
+            res.json(tournamentData);
+    } catch (error) {
+        next(error);
+    }
+    
+}
+
+
 const logout = async(req,res, next)=>
     {
         try{
@@ -138,7 +157,6 @@ const logout = async(req,res, next)=>
     const refresh=async(req,res, next)=>
         {
             let {refreshToken,deviceId}=req.cookies;
-            console.log(refreshToken);
             const findedToken= await TokenService.findToken(refreshToken);
             const validToken= TokenService.validateRefreshToken(refreshToken);
             if(!findedToken||!validToken)
@@ -160,4 +178,4 @@ const logout = async(req,res, next)=>
                 res.status(200).json({message: "TokenRefreshed", accessToken: token.accessToken, user: userDto});
                 
         }
-module.exports = { registerUser, confirmEmail, login, getUsers,logout,refresh };
+module.exports = { registerUser, confirmEmail,getTournaments, login, logout,refresh,getTournament };

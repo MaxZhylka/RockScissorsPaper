@@ -1,6 +1,7 @@
 const WebSocket = require('ws');
 const Game = require('../models/games-model');
 const determineRoundWinner = require("../controllers/game-controller");
+const Tournament = require('../models/tournament');
 const clients = {};
 
 const setupWebSocket = (server) => {
@@ -13,9 +14,52 @@ const setupWebSocket = (server) => {
             const parsedMessage = JSON.parse(message);
             console.log(parsedMessage);
             
-            const { type, playerId,playerName, gameId, move, onlyTwoPlayers } = parsedMessage;
+            const { type, playerId,playerName, gameId, move, tournamentName, onlyTwoPlayers } = parsedMessage;
         
             switch (type) {
+                case 'tournament':
+                    {
+                        
+                        const games = Array.from({ length: 3 }, () =>
+                            new Game({
+                                players: [],
+                                results: []
+                            })
+                        );
+    
+                        
+                        const savedGames = await Promise.all(games.map(game => game.save()));
+                        const generatedGameIds = savedGames.map(game => game._id);
+    
+                        
+                        for (let i = 0; i < savedGames.length - 1; i++) {
+                            savedGames[i].nextGameId = generatedGameIds[i + 1];
+                            await savedGames[i].save(); 
+                        }
+    
+                        
+                        const tournament = new Tournament({
+                            games: generatedGameIds,
+                            name: tournamentName
+                        });
+                        const savedTournament = await tournament.save();
+    
+                        
+                        const lastGameIndex = savedGames.length - 1;
+                        savedGames[lastGameIndex].nextGameId = `Tournament ${savedTournament._id}`;
+                        await savedGames[lastGameIndex].save();
+    
+                        
+                        generatedGameIds.forEach(generatedGameId => clients[generatedGameId] = { players: [] });
+    
+                        ws.send(JSON.stringify({
+                            type: 'tournament',
+                            gameId: generatedGameIds[0],
+                            tournament: savedTournament,
+                            game: savedGames[0]
+                        }));
+                        break;
+                    }
                 case 'create': {
                     const game = new Game({
                         players: [],
@@ -114,6 +158,31 @@ const setupWebSocket = (server) => {
                                         const winnerPlayerNames = winners.map(w => w.playerName);
                                         const score = 175*(game.results.length+1);
                                         // Устанавливаем isLoose для проигравших
+                                        if (winners.length === 0) {
+                                        
+                                            await Game.updateOne(
+                                                { _id: gameId },
+                                                {
+                                                    $push: {
+                                                        results: {
+                                                            winnerId: [], 
+                                                            winnerName: "Draw",
+                                                            round: updatedGame.results.length + 1
+                                                        }
+                                                    },
+                                                    $set: {
+                                                        isDisplay: true
+                                                    }
+                                                }
+                                            );
+
+                                            const updatedGameWithResults = await Game.findById(gameId);
+                                            clients[gameId].players.forEach((playerWs) => {
+                                                console.log("sendingDrawResults");
+                                                playerWs.send(JSON.stringify({ type: 'roundResult', game: updatedGameWithResults }));
+                                            });
+                                        } else
+                                        {
                                         for (const player of activePlayers) {
                                             if (!winners.map(obj => obj.playerId).includes(player.playerId)) {
                                                 await Game.updateOne(
@@ -133,7 +202,8 @@ const setupWebSocket = (server) => {
                                                 );
                                             }
                                         }
-                                    } else {
+                                        
+                                    }} else {
                                         const pointsDraw = 100;
                                         const pointsWin = 300;
                                         const pointsLoss = 50;
@@ -225,13 +295,17 @@ const setupWebSocket = (server) => {
                                     // Проверяем условие окончания игры для игры с 3 и более игроками
                                     const remainingPlayers = updatedGameWithResults.players.filter(p => !p.isLoose);
                                     const scoreResult = (game.results.length+2)*175;
+                                    console.log(remainingPlayers);
+                                    console.log(scoreResult)
                                     if (remainingPlayers.length === 1) {
                                         const winnerPlayer = remainingPlayers[0];
                                         await Game.updateOne(
                                             { _id: gameId, "players.playerId":winnerPlayer.playerId },
                                             { $set: { winner: winnerPlayer.playerName,
+                                                    "players.$.score":scoreResult,
                                                     winnerId: winnerPlayer.playerId,
-                                                    "players.$.score":scoreResult} }
+                                                
+                                                } }
                                         );
                                         // Уведомляем игроков об окончании игры
                                         const finalGameState = await Game.findById(gameId);

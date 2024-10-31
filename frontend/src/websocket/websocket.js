@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { setGame } from '../actionCreators/gameActions';
 import { useDispatch } from 'react-redux';
+import { setTournament } from '../actionCreators/authAction';
 
 const useWebSocket = (url, onMessageReceived) => {
     const [ws, setWs] = useState(null);
@@ -17,7 +18,12 @@ const useWebSocket = (url, onMessageReceived) => {
         };
 
         socket.onmessage = (event) => {
+
             const data = JSON.parse(event.data);
+            if(data.type==="tournament")
+            {
+                dispatch(setTournament(data.tournamet));
+            }
             dispatch(setGame(data.game));
             if (onMessageReceived) onMessageReceived();
         };
