@@ -12,6 +12,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/axios": "^0.14.0",
     "axios": "^1.7.3",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
     "mobx": "^6.13.1",
     "mobx-react-lite": "^4.0.7",
@@ -29,7 +30,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "cross-env HOST=192.168.0.104 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

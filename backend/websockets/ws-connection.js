@@ -20,10 +20,11 @@ const setupWebSocket = (server) => {
                 case 'tournament':
                     {
                         
-                        const games = Array.from({ length: 3 }, () =>
+                        const games = Array.from({ length: 3 }, (_, index) =>
                             new Game({
                                 players: [],
-                                results: []
+                                results: [],
+                                gameNumber: `${index + 1}` 
                             })
                         );
     

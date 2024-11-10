@@ -15,9 +15,22 @@
     justify-content: center;
     align-items: center;
     gap: 50px;
-    height: 400px;
+    height: 500px;
     background-color: rgba(92, 85, 85, 0.2);
     font-weight: 400px;
     font-size: 36px;
     border-radius: 50px;
+}
+.Winner
+{
+    position: absolute;
+    left: calc(50% - 400px);
+    top: 40px;
+
+    font-weight: bold;
+    width: 800px;
+    align-content: center;
+    text-align: center;
+    font-size: 60px;
+
 }

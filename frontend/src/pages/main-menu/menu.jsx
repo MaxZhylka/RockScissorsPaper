@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import useWebSocket from '../../websocket/websocket';
 import {useSelector } from "react-redux";
-
+import hint from "../../assets/img/hint.png";
 
 const WS_BASE_URL = process.env.REACT_APP_WS_BASE_URL;
 
@@ -52,8 +52,34 @@ const Menu = () => {
         <div>
             <h1 className="mainHeader">ROCK | SCISSORS | PAPER</h1>
             <div className="menu">
-                <button className="menuBtn" onClick={createDuoGame}>PLAY 1 VS 1</button>
-                <button className="menuBtn" onClick={createGame}>PLAY 3 AND MORE</button>
+
+                <div className="lineWithRules">
+                    <button className="menuBtn" onClick={createDuoGame}>PLAY 1 VS 1</button>
+                    <div className="rules">
+                        <img className="hintIMG" src={hint} alt="hint" />
+                        <span className="hint">
+                            The game will continue until one player wins 3 times. 
+                            In each round, the score will be calculated as follows: 
+                            <br/>
+                            - Win: 300 points
+                            <br/>
+                            - Loss: 50 points
+                            <br/>
+                            - Draw: 100 points
+                        </span>
+                    </div>
+                </div>
+                <div className="lineWithRules">
+                    <button className="menuBtn" onClick={createGame}>PLAY 3 AND MORE</button>
+                    <div className="rules">
+                        <img className="hintIMG" src={hint} alt="hint" />
+                        <span className="hint">
+                        This game type will not end until there is at least one player with no losses. 
+                        For each round, the player who lasted will earn 175 points.
+                        </span>
+                    </div>
+                </div>
+
                 <button className="menuBtn" onClick={createTournament}>TOURNAMENT</button>
                 <button className="menuBtn" onClick={goToProfile}>PROFILE</button>
             </div>

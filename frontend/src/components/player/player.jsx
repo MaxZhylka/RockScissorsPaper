@@ -7,8 +7,9 @@ import conErrorImg from '../../assets/img/conError.png';
 import "./player.css";
 import { useSelector } from "react-redux";
 import loser from '../../assets/img/loser.png';
+import confirmed from '../../assets/img/confirmed.png'
 
-const Player = ({ playerData, isDisplay }) => {
+const Player = ({ playerData, isDisplay, results }) => {
     const [img, setImg] = useState(questionImg); 
     const winnerId = useSelector(state => state.game.winnerId);
     const displayMove = useCallback(() => {
@@ -27,13 +28,21 @@ const Player = ({ playerData, isDisplay }) => {
                     setImg(rockImg);
                     break;
                 default:
+                    
                     setImg(questionImg);
                     break;
             }
         } else {
-            setImg(questionImg); 
+            if(results.length<playerData.moves.length)
+            {
+                setImg(confirmed);
+            }
+            else{
+                setImg(questionImg); 
+            }
+            
         }
-    }, [playerData.moves, isDisplay]);
+    }, [playerData.moves, isDisplay, results]);
 
 
     useEffect(() => {
@@ -57,13 +66,23 @@ const Player = ({ playerData, isDisplay }) => {
                     displayMove();
                     break;}
             }, [playerData, displayMove, winnerId]);
+        
+        const isWinnerGlow=()=>
+        {
+            if( results.length !== 0 &&
+                results[results.length-1].winnerName.find(winnerName=>winnerName===playerData.playerName))
+            {
+                return true;
+            }
+            return false;
+        }
 
     return (
-        <div className="playerContainer">
+        <div className="playerContainer" >
             <div className="playerName">{playerData.playerName}</div>
-            <div className="playerChoose">
+            <div className= {`playerChoose ${isDisplay ? (isWinnerGlow() ? 'winner' : 'loser') : ""}`}>
                 <img className="playerImg" src={img} alt="Player's move" />
-                {playerData.isLoose&&<img className="playerImg" src={loser} alt="Loser"/>}
+                {playerData.isLoose && <img className="playerImg" src={loser} alt="Loser"/>}
             </div>
         </div>
     );

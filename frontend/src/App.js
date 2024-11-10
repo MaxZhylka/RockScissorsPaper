@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router,Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router,Route, Routes, Navigate } from 'react-router-dom';
 import AuthPage from './pages/auth-page/auth-page';
 import { Helmet } from 'react-helmet';
 import './App.css'
@@ -30,6 +30,7 @@ function App() {
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Helmet>
                   <Routes>
+                  <Route path="/" element={<Navigate to="/menu" />} />
                   <Route exact path="/login" element={<AuthPage />}  />
                   <Route path="/registration" element={<AuthPage />} />
                         <Route path="/menu" element={<ProtectedRoute><Menu/></ProtectedRoute>} />

@@ -29,3 +29,19 @@ export const fetchTournament = async (tournamentId) => {
         throw error; 
     }
 };
+export const fetchActiveTournaments = async (page=1, limit = 10)=>
+{
+    try {
+        const response = await $api.get('/activeTournaments', {
+        params: {
+            page,
+            limit,
+        }
+        });
+        console.log(response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching tournaments:', error);
+        throw error;
+    }
+}

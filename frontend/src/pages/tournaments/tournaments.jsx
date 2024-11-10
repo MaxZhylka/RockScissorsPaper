@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState, useRef } from "react";
-import { fetchTournaments } from "../../service/userService";
+import { fetchActiveTournaments, fetchTournaments } from "../../service/userService";
 import { CSSTransition } from 'react-transition-group';
 import TournamentForm from "../../components/tournament-form/tournament-form";
 import "./tournaments.css";
@@ -10,24 +11,27 @@ const Tournaments = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [page, setPage] = useState(1);
     const [isLoading, setIsLoading] = useState(false); 
-    const [hasMore, setHasMore] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
     const [displayTournamentForm, setDisplayTournamentForm] = useState(false);
     const formRef = React.createRef();
     const observerRef = useRef(null);
-
+    
     const navigate = useNavigate();
 
     const isTournamentEnd = (tournament) => {
         return tournament.games[2].winnerId ;
     };
 
-    // Fetch tournaments based on current page and search query
     const loadTournaments = async (pageToLoad, reset = false) => {
         setIsLoading(true);
         try {
-            const newTournaments = await fetchTournaments(pageToLoad, 10, searchQuery);
+            let newTournaments;
+            if (searchQuery.trim() === "") {
+                newTournaments = await fetchActiveTournaments(pageToLoad, 10);
+            } else {
+                newTournaments = await fetchTournaments(pageToLoad, 10, searchQuery);
+            }
             setTournaments((prev) => reset ? newTournaments : [...prev, ...newTournaments]);
-            // Set hasMore to false when fewer items than requested are returned
             setHasMore(newTournaments.length === 10);
         } catch (error) {
             console.error("Error loading tournaments:", error);
@@ -37,29 +41,27 @@ const Tournaments = () => {
     };
 
     useEffect(() => {
-        if (searchQuery.trim() === "") {
-            setTournaments([]);
-            setHasMore(false);
-            return;
-        }
+        loadTournaments(1, true);
+    }, []);
 
-        setHasMore(true); 
+    useEffect(() => {
         const debounceTimeout = setTimeout(() => {
             setPage(1);
-        }, 400);
+            loadTournaments(1, true);
+        }, 300);
 
         return () => clearTimeout(debounceTimeout);
     }, [searchQuery]);
 
     useEffect(() => {
-        if (searchQuery.trim() === "") return; 
-        loadTournaments(page, page === 1);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [page, searchQuery]);
+        if (page > 1) {
+            loadTournaments(page, false);
+        }
+    }, [page]);
 
     const handleObserver = (entries) => {
         const target = entries[0];
-        if (target.isIntersecting && !isLoading && hasMore && searchQuery.trim() !== "") {
+        if (target.isIntersecting && !isLoading && hasMore) {
             setPage((prevPage) => prevPage + 1); 
         }
     };
@@ -80,7 +82,6 @@ const Tournaments = () => {
                 observer.unobserve(currentNode); 
             }
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoading, hasMore]);
 
     return (

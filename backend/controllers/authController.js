@@ -26,8 +26,8 @@ const registerUser = async (req, res, next) => {
         let deviceId = req.cookies['deviceId'];
         if (!deviceId) {
             deviceId = crypto.randomBytes(32).toString('hex');
-            res.cookie('deviceId', deviceId, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 ,
-                secure: true, sameSite: 'None'});
+            res.cookie('deviceId', deviceId, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 , secure: true,  sameSite: 'None'
+            });
         }
 
         await newUser.save();
@@ -45,8 +45,8 @@ const registerUser = async (req, res, next) => {
 
         await saveTokenPromise;
 
-        res.cookie('refreshToken', token.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true,
-            secure: true, sameSite: 'None'});
+        res.cookie('refreshToken', token.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true,secure: true,  sameSite: 'None'
+            });
 
         res.status(200).json({ token: token.accessToken, user: userDto });
     } catch (e) {
@@ -100,8 +100,7 @@ const login = async (req, res, next) => {
         const userDto = new userDTO(user);
         const token = TokenService.generateTokens({ ...userDto });
         await TokenService.saveToken(userDto.id, deviceId, token.refreshToken);
-        res.cookie('refreshToken', token.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true,
-            secure: true,  sameSite: 'None' });
+        res.cookie('refreshToken', token.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, secure: true,  sameSite: 'None' });
         res.status(200).json({ token: token.accessToken, user:userDto});
     }
     catch (e) {
@@ -127,13 +126,63 @@ const getTournament = async (req, res,next)=>
     const {tournamentId}=req.query;
     try {
         const tournamentData = await tournament.findById(tournamentId).populate('games').exec();
-           
             res.json(tournamentData);
     } catch (error) {
         next(error);
     }
     
 }
+const getActiveTournaments = async (req, res, next) => {
+    const { limit = 10, page = 1 } = req.query;
+
+    try {
+        const activeTournaments = await tournament.aggregate([
+            {
+                $lookup: {
+                    from: "games",
+                    let: { gameIds: "$games" },
+                    pipeline: [
+                        { $match: { $expr: { $in: ["$_id", "$$gameIds"] } } },
+                        {
+                            $addFields: {
+                                order: { $indexOfArray: ["$$gameIds", "$_id"] }
+                            }
+                        },
+                        { $sort: { order: 1 } }
+                    ],
+                    as: "games"
+                }
+            },
+            {
+                $addFields: {
+                    lastGame: { $arrayElemAt: ["$games", -1] }
+                }
+            },
+            {
+                $match: {
+                    $or: [
+                        { "lastGame.winnerId": { $exists: false } },
+                        { "lastGame.winnerId": null },
+                        { "lastGame.winnerId": "" }
+                    ]
+                }
+            },
+            {
+                $sort: { date: -1 }
+            },
+            {
+                $skip: (Number(page) - 1) * Number(limit)
+            },
+            {
+                $limit: Number(limit)
+            }
+        ]);
+
+        res.json(activeTournaments);
+    } catch (e) {
+        next(e);
+    }
+};
 
 
 const logout = async(req,res, next)=>
@@ -159,6 +208,7 @@ const logout = async(req,res, next)=>
             let {refreshToken,deviceId}=req.cookies;
             const findedToken= await TokenService.findToken(refreshToken);
             const validToken= TokenService.validateRefreshToken(refreshToken);
+            
             if(!findedToken||!validToken)
                 {
                     return res.status(401).json({message:'Unauthorized'});
@@ -168,14 +218,14 @@ const logout = async(req,res, next)=>
                     return res.status(404).json({ message: 'User not found' });
                 }
 
-                deviceId= crypto.randomBytes(32).toString('hex');
-                const userDto= new userDTO(user);
-                const token= TokenService.generateTokens({...userDto});
+                deviceId = crypto.randomBytes(32).toString('hex');
+                const userDto = new userDTO(user);
+                const token = TokenService.generateTokens({...userDto});
                 await TokenService.saveToken(user._id,deviceId,token.refreshToken);
                 
-                res.cookie('deviceId', deviceId, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true,secure: true,  sameSite: 'None' });
-                res.cookie('refreshToken', token.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true,secure: true, sameSite: 'None'});
+                res.cookie('deviceId', deviceId, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, secure: true,  sameSite: 'None' });
+                res.cookie('refreshToken', token.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, secure: true,  sameSite: 'None'});
                 res.status(200).json({message: "TokenRefreshed", accessToken: token.accessToken, user: userDto});
                 
         }
-module.exports = { registerUser, confirmEmail,getTournaments, login, logout,refresh,getTournament };
+module.exports = { registerUser,getActiveTournaments, confirmEmail,getTournaments, login, logout,refresh,getTournament };

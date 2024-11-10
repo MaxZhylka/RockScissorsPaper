@@ -21,9 +21,10 @@ const gameSchema = new Schema(
         }
     ],
     isDisplay:{type: Boolean, default:false},
-    winner:String,
-    winnerId:String,
+    winner:{type: String, default: ""},
+    winnerId:{type: String, default: ""},
     nextGameId:String,
+    gameNumber:{type: String, default: ""},
     onlyTwoPlayers:{type: Boolean, default:false},
     date: {type: Date, default: Date.now}
 });

@@ -4,6 +4,8 @@ import { useNavigate, useParams } from "react-router";
 import Loader from "../../components/loader/loader";
 import { CSSTransition } from "react-transition-group";
 import ScoreTable from "../../components/scoreTable/scoreTable";
+import { useDispatch, useSelector } from "react-redux";
+import { setTournament } from "../../actionCreators/authAction";
 import "./tournament.css";
 
 const Tournament = () => {
@@ -11,27 +13,25 @@ const Tournament = () => {
     const [displayScore, setDisplayScore] = useState(false);
     const navigate = useNavigate();
     const scoreRef = useRef(null);
-    const [tournamentData, setTournamentData] = useState(null);
-
+    const dispatch = useDispatch();
+    const tournamentData = useSelector(state => state.tournament);
     useEffect(() => {
-        console.log("Fetching tournament data for:", tournamentId);
 
         const fetchData = async () => {
             try {
-                setTournamentData(null); // Сброс данных перед загрузкой новых
+                dispatch(setTournament(null));
                 const tournament = await fetchTournament(tournamentId);
-                setTournamentData(tournament);
+                dispatch(setTournament(tournament));
             } catch (error) {
                 console.error('Error fetching tournament:', error);
             }
         };
         fetchData();
 
-        // Cleanup function to reset tournament data on unmount
         return () => {
-            setTournamentData(null);
+            dispatch(setTournament(null));
         };
-    }, [tournamentId]);
+    }, [dispatch, tournamentId]);
 
     const getWinnerScore = (game) => {
         const winnerPlayer = game.players.find(player => player.playerId === game.winnerId);
@@ -39,7 +39,7 @@ const Tournament = () => {
     };
 
     const navigateToGame = (gameId) => {
-        // Обновляем страницу, чтобы гарантировать полное обновление данных
+    
         navigate(`/game/${gameId}`, { replace: true });
         window.location.reload();
     };
@@ -50,7 +50,7 @@ const Tournament = () => {
         tournamentData?.games?.forEach(game => {
             game.players.forEach(player => {
                 if (!playerScores[player.playerId]) {
-                    playerScores[player.playerId] = { playerName: player.playerName, score: 0 };
+                    playerScores[player.playerId] = { playerName: player?.playerName, score: 0 };
                 }
                 playerScores[player.playerId].score += player.score;
             });
@@ -58,13 +58,27 @@ const Tournament = () => {
 
         return Object.values(playerScores);
     };
+    const getWinner =()=>
+    {
+        let playerScores=getPlayers();
+        playerScores.sort((a,b)=>b.score-a.score);
+        return playerScores[0]?.playerName;
+    }
+    const isTournamentEnd=()=>
+    {
+        if (!tournamentData?.games || tournamentData.games.length < 3) {
+            return false;
+        }
+        console.log(tournamentData?.games[2]?.winnerId);
+        return tournamentData?.games[2]?.winnerId!==""
+    }
 
     if (!tournamentData) {
         return (<Loader />);
     }
 
     return (
-        <div key={tournamentId}> {/* Принудительное обновление по ключу */}
+        <div key={tournamentId}> 
             <CSSTransition
                 in={displayScore}
                 nodeRef={scoreRef}
@@ -84,6 +98,8 @@ const Tournament = () => {
                 >
                     Menu
                 </button>
+
+                {isTournamentEnd()&&<div className="Winner">{getWinner()} won this Tournament!</div>}
                 <button
                     className="scoreBtn"
                     onClick={() => { setDisplayScore(!displayScore); }}

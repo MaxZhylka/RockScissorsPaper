@@ -54,9 +54,10 @@ const GamePage = () => {
         if (game.winner && game.nextGameId && game.nextGameId !== "" ) {
             if (game.nextGameId.startsWith('Tournament ')) {
                 const tournamentId = game.nextGameId.split(' ')[1];
-                navigate(`/tournament/${tournamentId}`);
+                setTimeout(()=>navigate(`/tournament/${tournamentId}`),5000);
             } else {
-                navigate(`/game/${game.nextGameId}`);
+                setTimeout(()=>navigate(`/game/${game.nextGameId}`),5000);
+                
             }
         }
     }, [game.winner, game.nextGameId, navigate]);
@@ -170,15 +171,15 @@ const GamePage = () => {
             {(game.winnerId||isLoose())&& <button className="scoreBtn" onClick={()=>setDisplayScore(!displayScore)}>Score</button>}
             <header className="gameHeader">
                 {!game.winnerId&&!isLoose()&&<img onClick={GiveUp} className="headerImg" src={flag} alt="Flag" />}
-                
-                <h1 className="headerText"> {game.winner?`${game.winner} WIN`:`Round ${game.results?.length +1|| 1}`}</h1>
+                {game.gameNumber!==""&&<div className="gameCounter">Game {game.gameNumber}</div>}
+                <h1 className={game.gameNumber!==""?"headerTextGame":"headerText"}> {game.winner?`${game.winner} WIN`:`Round ${game.results?.length +1|| 1}`}</h1>
                 {game.players?.length === 2 && <div className="scoreText">{calcScore()}</div>}
             </header>
             <div className="timer"></div>
             <div className="players">
                 {(game.players || []).map((player, index) => {
                     
-                    return <Player key={index} playerData={player} isDisplay={game.isDisplay} />
+                    return <Player key={index} playerData={player} results={game.results} isDisplay={game.isDisplay} />
                 })}
             </div>
             {!game.winnerId&&!isLoose()&&<div className="BtnContainer">

@@ -28,3 +28,20 @@
     font-size: 96px;
     text-align: center;
 }
+
+.winner {
+    filter: drop-shadow(0 0 20px rgb(5, 203, 5)); 
+    transition: 200ms ease-in-out;
+}
+
+.loser {
+    filter: drop-shadow(0 0 20px red); 
+    transition: 200ms ease-in-out;
+}
+.winner:hover {
+    filter: drop-shadow(0 0 35px rgb(5, 203, 5));
+}
+
+.loser:hover {
+    filter: drop-shadow(0 0 35px red);
+}

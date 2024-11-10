@@ -190,3 +190,21 @@
     opacity: 0;
     transition: opacity ease-in-out 300ms;
 }
+.gameCounter
+{
+    font-size: 60px;
+    text-align: center;
+    width: 100%;
+    font-weight: bold;
+    top: 30px;
+    position: absolute;
+}
+.headerTextGame
+{
+    font-size: 60px;
+    text-align: center;
+    margin: 0;
+    top: 120px;
+    width: 100%;
+    position: absolute;
+}
